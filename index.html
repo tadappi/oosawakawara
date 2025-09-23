@@ -31,7 +31,7 @@
     // 1) ビューア生成（★plugins に Markers を渡すのがポイント）
     const viewer = new PhotoSphereViewer.Viewer({
       container : document.getElementById('viewer'),
-      panorama  : 'SD12F.jpg',             // ← 天球画像（リポジトリ直下）
+      panorama  : 'sphere.jpg',             // ← 天球画像（リポジトリ直下）
       loadingTxt: 'ロード中…',
       plugins   : [ PhotoSphereViewer.MarkersPlugin ]
     });
@@ -92,3 +92,4 @@
   </script>
 </body>
 </html>
+
