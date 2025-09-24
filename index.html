@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>PSV v4 + Pins</title>
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/uevent@2/browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/plugins/markers.js"></script>
+  <style>html,body{margin:0;height:100%}#viewer{width:100%;height:100%}</style>
+</head>
+<body>
+<div id="viewer"></div>
+<script>
+  const viewer = new PhotoSphereViewer.Viewer({
+    container: document.getElementById('viewer'),
+    panorama: 'sphere30m.jpg',   // ←ファイル名を正しく
+    plugins: [PhotoSphereViewer.MarkersPlugin]
+  });
+
+  const markersPlugin = viewer.getPlugin(PhotoSphereViewer.MarkersPlugin);
+
+  viewer.once('ready', () => {
+    const pinIcon = 'https://cdn-icons-png.flaticon.com/512/684/684908.png';
+
+    markersPlugin.addMarker({
+      id: 'pin1',
+      longitude: 0.0,   // 正面
+      latitude: 0.0,    // 水平線
+      image: pinIcon,
+      width: 96,
+      height: 96,
+      anchor: 'bottom center',
+      tooltip: '① サンプルピン',
+      data: { url: '1.jpg' }
+    });
+
+    markersPlugin.on('select-marker', (e, marker) => {
+      if (marker.data?.url) {
+        window.open(marker.data.url, '_blank');
+      }
+    });
+  });
+</script>
+</body>
+</html>
