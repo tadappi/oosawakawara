@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>PSV v4 + Pins (12000x6000 固定)</title>
+
+  <!-- Photo-Sphere-Viewer v4 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/uevent@2/browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/plugins/markers.js"></script>
+
+  <style>
+    html,body{margin:0;height:100%}
+    #viewer{width:100%;height:100%}
+  </style>
+</head>
+<body>
+<div id="viewer"></div>
+
+<script>
+  // 12000x6000 の equirectangular 前提
+  const viewer = new PhotoSphereViewer.Viewer({
+    container: document.getElementById('viewer'),
+    panorama: 'sphere30m.jpg', // ← 12000x6000 の画像
+    panoData: {
+      fullWidth: 12000,
+      fullHeight: 6000,
+      croppedWidth: 12000,
+      croppedHeight: 6000,
+      croppedX: 0,
+      croppedY: 0
+    },
+    plugins: [PhotoSphereViewer.MarkersPlugin]
+  });
+
+  const markersPlugin = viewer.getPlugin(PhotoSphereViewer.MarkersPlugin);
+
+  // 外部CDNの画像をやめ、埋め込みSVGにして確実に表示
+  const pinIconDataURI =
+    'data:image/svg+xml;utf8,' +
+    encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+        <defs>
+          <radialGradient id="g" cx="50%" cy="40%" r="50%">
+            <stop offset="0%" stop-color="#ff9a9e"/>
+            <stop offset="100%" stop-color="#e53935"/>
+          </radialGradient>
+        </defs>
+        <path d="M32 4c-9.389 0-17 7.611-17 17 0 12.75 17 39 17 39s17-26.25 17-39c0-9.389-7.611-17-17-17z" fill="url(#g)"/>
+        <circle cx="32" cy="21" r="7" fill="#fff" opacity="0.85"/>
+        <circle cx="32" cy="21" r="4.5" fill="#222"/>
+      </svg>
+    `);
+
+  viewer.once('ready', () => {
+    // 真正面・水平線上にテストピン
+    markersPlugin.addMarker({
+      id: 'pin1',
+      longitude: 0.0,    // 0 = 正面
+      latitude: 0.0,     // 0 = 水平線
+      image: pinIconDataURI,
+      width: 64,
+      height: 64,
+      anchor: 'bottom center',
+      tooltip: { content: '① サンプルピン', position: 'top center' },
+      data: { url: '1.jpg' }
+    });
+
+    // クリックでリンクを新規タブ
+    markersPlugin.on('select-marker', (e, marker) => {
+      if (marker?.data?.url) window.open(marker.data.url, '_blank');
+    });
+  });
+</script>
+</body>
+</html>
